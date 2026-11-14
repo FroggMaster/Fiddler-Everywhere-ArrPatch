@@ -1,0 +1,442 @@
+﻿{
+  "Options": 4,
+  "Types": {
+    "References": {
+      "0": {
+        "Name": "BackendService",
+        "Namespace": "Fiddler.WebUi.Services.Backend"
+      },
+      "1": {
+        "Name": "Task`1",
+        "Namespace": "System.Threading.Tasks",
+        "Assembly": "System.Runtime"
+      },
+      "2": {
+        "Name": "OfflineLicenseFileDTO",
+        "Namespace": "FiddlerBackend.Contracts",
+        "Assembly": "FiddlerBackend.Contracts"
+      },
+      "3": {
+        "Name": "OfflineUserDTO",
+        "Namespace": "Fiddler.WebUi.Services.Backend"
+      },
+      "4": {
+        "Name": "Dictionary`2",
+        "Namespace": "System.Collections.Generic",
+        "Assembly": "System.Collections"
+      },
+      "5": {
+        "Name": "JsonSerializer",
+        "Namespace": "System.Text.Json",
+        "Assembly": "System.Text.Json"
+      },
+      "6": {
+        "Name": "JsonSerializerOptions",
+        "Namespace": "System.Text.Json",
+        "Assembly": "System.Text.Json"
+      },
+      "7": {
+        "Name": "JsonDocumentOptions",
+        "Namespace": "System.Text.Json",
+        "Assembly": "System.Text.Json"
+      },
+      "8": {
+        "Name": "JsonDocument",
+        "Namespace": "System.Text.Json",
+        "Assembly": "System.Text.Json"
+      },
+      "9": {
+        "Name": "JsonElement",
+        "Namespace": "System.Text.Json",
+        "Assembly": "System.Text.Json"
+      },
+      "10": {
+        "Name": "IDictionary`2",
+        "Namespace": "System.Collections.Generic",
+        "Assembly": "System.Runtime"
+      },
+      "11": {
+        "Name": "DateTime",
+        "Namespace": "System",
+        "Assembly": "System.Runtime"
+      },
+      "12": {
+        "Name": "Guid",
+        "Namespace": "System",
+        "Assembly": "System.Runtime"
+      },
+      "13": {
+        "Name": "Task",
+        "Namespace": "System.Threading.Tasks",
+        "Assembly": "System.Runtime"
+      }
+    },
+    "Definitions": {},
+    "Orders": []
+  },
+  "Fields": {
+    "References": {},
+    "Definitions": {},
+    "Orders": []
+  },
+  "Methods": {
+    "References": {
+      "1": {
+        "Name": ".ctor",
+        "Type": "3",
+        "Signature": "Default(Int32(32),Int32(0),Void)"
+      },
+      "2": {
+        "Name": "set_Email",
+        "Type": "3",
+        "Signature": "Default(Int32(32),Int32(1),Void,String)"
+      },
+      "3": {
+        "Name": "set_FirstName",
+        "Type": "3",
+        "Signature": "Default(Int32(32),Int32(1),Void,String)"
+      },
+      "4": {
+        "Name": "set_LastName",
+        "Type": "3",
+        "Signature": "Default(Int32(32),Int32(1),Void,String)"
+      },
+      "5": {
+        "Name": "set_UserPrincipalEmail",
+        "Type": "3",
+        "Signature": "Default(Int32(32),Int32(1),Void,String)"
+      },
+      "6": {
+        "Name": ".ctor",
+        "Type": "2",
+        "Signature": "Default(Int32(32),Int32(0),Void)"
+      },
+      "7": {
+        "Name": ".ctor",
+        "Type": "GenericInst(Class(4),Int32(2),String,Object)",
+        "Signature": "Default(Int32(32),Int32(0),Void)"
+      },
+      "8": {
+        "Name": "Serialize",
+        "Type": "5",
+        "Signature": "Default(Int32(16),Int32(1),Int32(2),String,MVar(Int32(0)),Class(6))"
+      },
+      "9": {
+        "Name": "Parse",
+        "Type": "8",
+        "Signature": "Default(Int32(0),Int32(2),Class(8),String,ValueType(7))"
+      },
+      "10": {
+        "Name": "get_RootElement",
+        "Type": "8",
+        "Signature": "Default(Int32(32),Int32(0),ValueType(9))"
+      },
+      "11": {
+        "Name": "set_Item",
+        "Type": "GenericInst(Class(4),Int32(2),String,Object)",
+        "Signature": "Default(Int32(32),Int32(2),Void,Var(Int32(0)),Var(Int32(1)))"
+      },
+      "12": {
+        "Name": "set_AdditionalData",
+        "Type": "2",
+        "Signature": "Default(Int32(32),Int32(1),Void,GenericInst(Class(10),Int32(2),String,Object))"
+      },
+      "13": {
+        "Name": "Parse",
+        "Type": "11",
+        "Signature": "Default(Int32(0),Int32(1),ValueType(11),String)"
+      },
+      "14": {
+        "Name": "set_CreatedAt",
+        "Type": "2",
+        "Signature": "Default(Int32(32),Int32(1),Void,ValueType(11))"
+      },
+      "15": {
+        "Name": "set_ExpiresAt",
+        "Type": "2",
+        "Signature": "Default(Int32(32),Int32(1),Void,ValueType(11))"
+      },
+      "16": {
+        "Name": "Parse",
+        "Type": "12",
+        "Signature": "Default(Int32(0),Int32(1),ValueType(12),String)"
+      },
+      "17": {
+        "Name": "set_Id",
+        "Type": "2",
+        "Signature": "Default(Int32(32),Int32(1),Void,ValueType(12))"
+      },
+      "18": {
+        "Name": "set_NotBefore",
+        "Type": "2",
+        "Signature": "Default(Int32(32),Int32(1),Void,ValueType(11))"
+      },
+      "19": {
+        "Name": "set_PlanName",
+        "Type": "2",
+        "Signature": "Default(Int32(32),Int32(1),Void,String)"
+      },
+      "20": {
+        "Name": "set_PlanPeriod",
+        "Type": "2",
+        "Signature": "Default(Int32(32),Int32(1),Void,String)"
+      },
+      "21": {
+        "Name": "FromResult",
+        "Type": "13",
+        "Signature": "Default(Int32(16),Int32(1),Int32(1),GenericInst(Class(1),Int32(1),MVar(Int32(0))),MVar(Int32(0)))"
+      }
+    },
+    "Definitions": {
+      "0": {
+        "Attributes": 134,
+        "ImplAttributes": 0,
+        "Parameters": [],
+        "Body": {
+          "Instructions": [
+            {
+              "OpCode": "newobj",
+              "TypeValue": "InlineMethod(1)"
+            },
+            {
+              "OpCode": "dup"
+            },
+            {
+              "OpCode": "ldstr",
+              "StringValue": "fiddler@telerik.com"
+            },
+            {
+              "OpCode": "callvirt",
+              "TypeValue": "InlineMethod(2)"
+            },
+            {
+              "OpCode": "dup"
+            },
+            {
+              "OpCode": "ldstr",
+              "StringValue": "fiddler"
+            },
+            {
+              "OpCode": "callvirt",
+              "TypeValue": "InlineMethod(3)"
+            },
+            {
+              "OpCode": "dup"
+            },
+            {
+              "OpCode": "ldstr",
+              "StringValue": ""
+            },
+            {
+              "OpCode": "callvirt",
+              "TypeValue": "InlineMethod(4)"
+            },
+            {
+              "OpCode": "dup"
+            },
+            {
+              "OpCode": "ldstr",
+              "StringValue": "fiddler@telerik.com"
+            },
+            {
+              "OpCode": "callvirt",
+              "TypeValue": "InlineMethod(5)"
+            },
+            {
+              "OpCode": "stloc.0"
+            },
+            {
+              "OpCode": "newobj",
+              "TypeValue": "InlineMethod(6)"
+            },
+            {
+              "OpCode": "stloc.1"
+            },
+            {
+              "OpCode": "ldloc.1"
+            },
+            {
+              "OpCode": "newobj",
+              "TypeValue": "InlineMethod(7)"
+            },
+            {
+              "OpCode": "stloc.2"
+            },
+            {
+              "OpCode": "ldloc.2"
+            },
+            {
+              "OpCode": "ldstr",
+              "StringValue": "users"
+            },
+            {
+              "OpCode": "ldc.i4.1"
+            },
+            {
+              "OpCode": "newarr",
+              "TypeValue": "InlineType(3)"
+            },
+            {
+              "OpCode": "dup"
+            },
+            {
+              "OpCode": "ldc.i4.0"
+            },
+            {
+              "OpCode": "ldloc.0"
+            },
+            {
+              "OpCode": "stelem.ref"
+            },
+            {
+              "OpCode": "ldnull"
+            },
+            {
+              "OpCode": "call",
+              "TypeValue": "InlineMethod(MethodSpec(8,GenericInstCC(Int32(0),Int32(1),SZArray(Class(3)))))"
+            },
+            {
+              "OpCode": "ldloca.s",
+              "PrimitiveValue": 3
+            },
+            {
+              "OpCode": "initobj",
+              "TypeValue": "InlineType(7)"
+            },
+            {
+              "OpCode": "ldloc.3"
+            },
+            {
+              "OpCode": "call",
+              "TypeValue": "InlineMethod(9)"
+            },
+            {
+              "OpCode": "callvirt",
+              "TypeValue": "InlineMethod(10)"
+            },
+            {
+              "OpCode": "box",
+              "TypeValue": "InlineType(9)"
+            },
+            {
+              "OpCode": "callvirt",
+              "TypeValue": "InlineMethod(11)"
+            },
+            {
+              "OpCode": "ldloc.2"
+            },
+            {
+              "OpCode": "callvirt",
+              "TypeValue": "InlineMethod(12)"
+            },
+            {
+              "OpCode": "ldloc.1"
+            },
+            {
+              "OpCode": "ldstr",
+              "StringValue": "2024/1/1"
+            },
+            {
+              "OpCode": "call",
+              "TypeValue": "InlineMethod(13)"
+            },
+            {
+              "OpCode": "callvirt",
+              "TypeValue": "InlineMethod(14)"
+            },
+            {
+              "OpCode": "ldloc.1"
+            },
+            {
+              "OpCode": "ldstr",
+              "StringValue": "2099/1/1"
+            },
+            {
+              "OpCode": "call",
+              "TypeValue": "InlineMethod(13)"
+            },
+            {
+              "OpCode": "callvirt",
+              "TypeValue": "InlineMethod(15)"
+            },
+            {
+              "OpCode": "ldloc.1"
+            },
+            {
+              "OpCode": "ldstr",
+              "StringValue": "00112233-4455-6677-8899-aabbccddeeff"
+            },
+            {
+              "OpCode": "call",
+              "TypeValue": "InlineMethod(16)"
+            },
+            {
+              "OpCode": "callvirt",
+              "TypeValue": "InlineMethod(17)"
+            },
+            {
+              "OpCode": "ldloc.1"
+            },
+            {
+              "OpCode": "ldstr",
+              "StringValue": "2024/1/1"
+            },
+            {
+              "OpCode": "call",
+              "TypeValue": "InlineMethod(13)"
+            },
+            {
+              "OpCode": "callvirt",
+              "TypeValue": "InlineMethod(18)"
+            },
+            {
+              "OpCode": "ldloc.1"
+            },
+            {
+              "OpCode": "ldstr",
+              "StringValue": "enterprise"
+            },
+            {
+              "OpCode": "callvirt",
+              "TypeValue": "InlineMethod(19)"
+            },
+            {
+              "OpCode": "ldloc.1"
+            },
+            {
+              "OpCode": "ldstr",
+              "StringValue": "annual"
+            },
+            {
+              "OpCode": "callvirt",
+              "TypeValue": "InlineMethod(20)"
+            },
+            {
+              "OpCode": "ldloc.1"
+            },
+            {
+              "OpCode": "call",
+              "TypeValue": "InlineMethod(MethodSpec(21,GenericInstCC(Int32(0),Int32(1),Class(2))))"
+            },
+            {
+              "OpCode": "ret"
+            }
+          ],
+          "ExceptionHandlers": [],
+          "Variables": [
+            "Class(3)",
+            "Class(2)",
+            "GenericInst(Class(4),Int32(2),String,Object)",
+            "ValueType(7)"
+          ],
+          "MaxStack": 7,
+          "InitLocals": true
+        },
+        "Name": "ReadOfflineLicenseFile",
+        "Type": "0",
+        "Signature": "Default(Int32(32),Int32(0),GenericInst(Class(1),Int32(1),Class(2)))"
+      }
+    },
+    "Orders": []
+  }
+}

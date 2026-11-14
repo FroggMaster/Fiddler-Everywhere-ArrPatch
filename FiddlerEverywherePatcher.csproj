@@ -1,0 +1,39 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net8.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <RootNamespace>FiddlerEverywherePatcher</RootNamespace>
+    <AssemblyName>FiddlerEverywherePatcher</AssemblyName>
+    <InvariantGlobalization>true</InvariantGlobalization>
+    <!--
+      The sources live in src/. The analysis projects under tools/ are separate projects and
+      must not be compiled into this one.
+    -->
+    <EnableDefaultCompileItems>false</EnableDefaultCompileItems>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Include="src\**\*.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <!-- The reference patch script. The logical name is pinned so it does not depend on
+         where the file sits in the tree. -->
+    <EmbeddedResource Include="src\Managed\PatchScript.json">
+      <LogicalName>FiddlerEverywherePatcher.Managed.PatchScript.json</LogicalName>
+    </EmbeddedResource>
+  </ItemGroup>
+
+  <ItemGroup>
+    <!--
+      dnlib rewrites the managed assembly. The PE patch deliberately uses only the in-box
+      System.Reflection.PortableExecutable, which reports a non-PE file as
+      "Invalid DOS signature". The ELF patch parses the section table directly.
+    -->
+    <PackageReference Include="dnlib" Version="4.4.0" />
+  </ItemGroup>
+
+</Project>

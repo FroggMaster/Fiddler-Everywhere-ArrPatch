@@ -1,0 +1,16 @@
+# Build output
+bin/
+obj/
+
+# Local analysis workspace, not part of the project
+logs/
+analysis/
+tools/
+
+# Agent instructions
+AGENTS.md
+
+# IDE and user state
+.vs/
+*.user
+*.suo
