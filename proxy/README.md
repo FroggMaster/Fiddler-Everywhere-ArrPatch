@@ -5,9 +5,8 @@ the installed files, a proxy DLL is placed next to the application and does the 
 inside the process.
 
 This is a separate component from the patcher in `src/`. The .NET tool remains the
-straightforward route: it patches the files and prints what it did. The proxy exists for the
-case where the work has to happen automatically on every launch, and for the case where the
-installed files must not be touched at all.
+straightforward route: it patches the files and prints what it did. The proxy exists in-case it is preferable not to modify the existing
+installed files VIA a patch. 
 
 ## Why version.dll works
 
@@ -25,47 +24,30 @@ VERSION.dll: 3 imports
 System32 and loads the copy that sits next to the executable. That copy is loaded during
 process initialisation, before any application code runs.
 
-The same trick works for `winhttp.dll`, which is loaded dynamically in both the Electron
-process and the backend. It was verified with a copy of the system DLL placed in each
-application directory:
-
-| Process | Application directory | Loaded from |
-| --- | --- | --- |
-| `Fiddler Everywhere.exe` (main) | install root | the copy in the install root |
-| `Fiddler.WebUi.exe` (backend) | `resources/app.asar.unpacked/out/WebServer` | the copy in that folder |
-
-`version.dll` is the better of the two for the parent process, because the static import
-means it is loaded during process initialisation rather than whenever the network stack
-happens to come up. The forwarding surface is also trivial: the API is only used to read
-file version information.
-
 ## How the patch reaches the backend
 
-The licence logic lives in the managed Web UI assembly, in the backend process. The proxy
+The license logic lives in the managed Web UI assembly, in the backend process. The proxy
 cannot patch that process directly, so it prepares the environment instead:
 
 1. The proxy sets `DOTNET_STARTUP_HOOKS` and `DOTNET_TieredCompilation=0` in its own
-   environment while it is being loaded, which happens during the initialisation of the
+   environment while it is being loaded, which happens during the initialization of the
    Electron process.
 2. The backend inherits both when it is spawned, so the .NET runtime loads the managed
    startup hook before the application entry point runs.
 3. The hook finds `Fiddler.WebUi.dll`, which is already loaded at that point, and replaces
-   the licence methods inside the running process.
-
-Tiered compilation is switched off because the hook replaces compiled code. A later
-recompilation would silently undo the replacement.
+   the license methods inside the running process.
 
 ## What the hook replaces
 
 | Method | Replacement |
 | --- | --- |
-| `BackendService.ReadOfflineLicenseFile` | returns a licence file DTO that is built in memory |
-| `BackendService.GetOfflineLicense` | returns a licence DTO with the enterprise plan, the annual period and an expiry in 2099 |
-| `GetCurrentUserADEmail`, `GetCurrentUserADPrincipalName` | return the e-mail of the licence |
+| `BackendService.ReadOfflineLicenseFile` | returns a license file DTO that is built in memory |
+| `BackendService.GetOfflineLicense` | returns a license DTO with the enterprise plan, the annual period and an expiry in 2099 |
+| `GetCurrentUserADEmail`, `GetCurrentUserADPrincipalName` | return the e-mail of the license |
 | `BackendService.Login` | forces the offline branch, then hands over to the original |
 
 The last one is the flag that decides whether the application talks to the cloud or uses
-the offline licence. It arrives as an argument, so the replacement changes it and calls the
+the offline license. It arrives as an argument, so the replacement changes it and calls the
 original.
 
 ## How the replacement is done
@@ -116,17 +98,6 @@ setup is needed:
 .\build.ps1
 dotnet publish .\hook\FiddlerEverywherePatcher.Hook.csproj -c Release -o .\hook\bin\release
 ```
-
-Output:
-
-```
-bin/x64/version.dll
-bin/x64/proxytest.exe
-hook/bin/release/FiddlerEverywherePatcher.Hook.dll
-```
-
-The proxy has to match the architecture of the target application, which is x64 for the
-current Fiddler Everywhere builds.
 
 ## Install
 
@@ -180,8 +151,4 @@ result:
 * The proxy is loaded into every Electron process, including the sandboxed renderers. Any
   work it does has to be limited to the process that needs it.
 * An unsigned DLL with a system name sitting next to an executable is a pattern that
-  endpoint protection software flags. The file has to be excluded or signed before the
-  route is usable on a managed machine.
-* The product's updater and uninstaller do not know about the extra files.
-* The startup hook is loaded into every .NET process the backend starts. A hook that cannot
-  be loaded stops the runtime from starting, so the hook has to be defensive.
+  endpoint protection software flags. The file may have to be excluded within your A/V.
