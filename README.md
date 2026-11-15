@@ -1,15 +1,15 @@
 # Fiddler Everywhere Patcher
 
 A small .NET 8 console application that patches a local Fiddler Everywhere installation so
-it runs with an offline enterprise licence. It modifies two files: the native `libfiddler`
+it runs with an offline enterprise license. It modifies two files: the native `libfiddler`
 library, which verifies the integrity of the Web UI assemblies, and `Fiddler.WebUi.dll`,
-which reads and validates the offline licence.
+which reads and validates the offline license.
 
 The tool resolves the installation directory, backs up every file before it touches it and
 reports what it did. `dnlib` is the only package it depends on.
 
 The patch points, the IL that is generated and the checks the application performs before
-it accepts a licence are described in
+it accepts a license are described in
 [Technical patch analysis](docs/PATCH_ANALYSIS.md).
 
 ## What it patches
@@ -18,7 +18,7 @@ it accepts a licence are described in
 | --- | --- | --- |
 | `libfiddler.dll`, `fiddler.dll` | PE | `0xC3` (`ret`) is written over the first byte of the integrity-check routine at `.text + 0x3F0`, so the routine returns without running the check |
 | `libfiddler.so`, `libfiddler.dylib` | ELF | the same byte at the same section-relative offset, located by walking the ELF section table |
-| `Fiddler.WebUi.dll` | .NET assembly | the body of `BackendService.ReadOfflineLicenseFile` is replaced with a routine that returns a locally built offline licence |
+| `Fiddler.WebUi.dll` | .NET assembly | the body of `BackendService.ReadOfflineLicenseFile` is replaced with a routine that returns a locally built offline license |
 
 Every layout the product ships is tried, so the tool works with the older `resources/app/...`
 tree and with the current `resources/app.asar.unpacked/...` tree.
@@ -57,7 +57,7 @@ dotnet publish -r win-x64 -c Release
 
 The `proxy` directory holds a second way to apply the patch. A `version.dll` is placed next
 to the executable, and it prepares the environment so that a managed startup hook replaces
-the licence methods inside the running backend process. Nothing in the installation is
+the license methods inside the running backend process. Nothing in the installation is
 modified, and the patch is applied on every launch. See
 [proxy/README.md](proxy/README.md).
 
@@ -99,16 +99,3 @@ src/
 docs/
   PATCH_ANALYSIS.md               technical detail on every change
 ```
-
-## Current limits
-
-* The native offset is tied to the build it was measured on. The patcher expects `0x55`
-  (`push rbp`) at the patch location and refuses to write anything else, so a different
-  build is not corrupted.
-* The ELF offsets are derived from the PE measurements and are not verified against a
-  Linux or macOS installation.
-* Fiddler Everywhere 8.4.0 applies further conditions before it uses an offline licence: the
-  profile must be in offline mode, the licence e-mail must match the current Windows
-  account, and the licence lookup must return a DTO rather than null. Section 6 of the
-  analysis describes all three and the edits that satisfy them. They are not part of this
-  build yet.
