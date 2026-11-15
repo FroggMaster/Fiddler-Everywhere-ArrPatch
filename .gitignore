@@ -1,6 +1,11 @@
 # Build output
 bin/
 obj/
+*.obj
+*.exp
+*.lib
+*.pdb
+*.ilk
 
 # Local analysis workspace, not part of the project
 logs/

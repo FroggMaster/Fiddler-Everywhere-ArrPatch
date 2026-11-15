@@ -203,6 +203,18 @@ managed assembly too, even though the timestamp is not otherwise meaningful for 
 two backups look the same. An existing backup is reused, never overwritten, which keeps the
 first pre-patch copy intact across repeated runs.
 
+The patcher can also report the state of an installation and put the files back:
+
+```
+dotnet run -- --status
+dotnet run -- --restore
+```
+
+The status report reads the patch byte in the file and in its backup, and inspects the
+managed methods, so it shows exactly which of the patches are present. The restore picks
+the backup whose name follows the naming scheme, which is the copy taken before the first
+patch, and leaves the file alone when there is none.
+
 ## 5. Console behaviour
 
 ```

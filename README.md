@@ -53,6 +53,30 @@ To produce a standalone executable:
 dotnet publish -r win-x64 -c Release
 ```
 
+## Another route: the version.dll proxy
+
+The `proxy` directory holds a second way to apply the patch. A `version.dll` is placed next
+to the executable, and it prepares the environment so that a managed startup hook replaces
+the licence methods inside the running backend process. Nothing in the installation is
+modified, and the patch is applied on every launch. See
+[proxy/README.md](proxy/README.md).
+
+## Checking and restoring an installation
+
+The tool can report what state an installation is in without touching it, and it can put the
+files back from their backups:
+
+```powershell
+dotnet run -- --status
+dotnet run -- --restore
+```
+
+Both take an optional installation directory, so `dotnet run -- --status "C:\path\to\install"`
+works as well. The status report says which of the patches are present, shows the hash of
+each file and of its backup, and reads the patch byte in the backup as well, so a restored
+installation can be confirmed byte for byte. It exits with `0` when the installation is
+unmodified and `1` when it carries patches.
+
 ## Backups
 
 Before a file is modified it is copied next to itself as

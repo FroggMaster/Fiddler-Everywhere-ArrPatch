@@ -2,6 +2,7 @@ using System.Text;
 using FiddlerEverywherePatcher.Common;
 using FiddlerEverywherePatcher.Managed;
 using FiddlerEverywherePatcher.Native;
+using FiddlerEverywherePatcher.Status;
 
 // Fiddler Everywhere patcher.
 //
@@ -15,49 +16,152 @@ using FiddlerEverywherePatcher.Native;
 //   * the target files are looked up in every layout the product ships, and a target
 //     that is not present is reported and skipped instead of aborting the run,
 //   * a file whose contents do not match the expected build is reported and left alone.
+//
+// Besides the interactive patch, the tool understands two commands:
+//
+//   --status    report what state an installation is in, without changing anything
+//   --restore   put the files back from their backups
+//
+// Both take an optional installation directory. Without one the default location is used.
 
 Console.OutputEncoding = Encoding.UTF8;
+
+if (args.Length > 0)
+{
+    string command = args[0];
+
+    if (command is "--status" or "--restore")
+    {
+        string installRoot = args.Length > 1 ? args[1] : InstallLayout.ResolveDefaultInstallRoot();
+
+        return command == "--status"
+            ? InstallStatus.Report(installRoot)
+            : RestoreInstallation(installRoot);
+    }
+
+    // Any other argument is treated as the installation directory.
+    PatchInstallation(command);
+    return 0;
+}
 
 Console.WriteLine("If the path is not accessible, please run this tool as administrator.");
 Console.WriteLine("Enter the path to the Fiddler Everywhere installation (press Enter to use the default location)");
 
 string? entered = Console.ReadLine();
-string installRoot = string.IsNullOrWhiteSpace(entered)
-    ? ResolveDefaultInstallRoot()
+string root = string.IsNullOrWhiteSpace(entered)
+    ? InstallLayout.ResolveDefaultInstallRoot()
     : entered.Trim();
 
-string? nativeLibrary = FindFirstExisting(GetNativeLibraryCandidates(installRoot));
-if (nativeLibrary != null)
-{
-    DoPatch(nativeLibrary, PatchNativeLibrary);
-}
-else
-{
-    Console.WriteLine($"No native library found under '{installRoot}', skipping the native patch.");
-}
-
-string? webUiAssembly = FindFirstExisting(GetWebUiAssemblyCandidates(installRoot));
-if (webUiAssembly != null)
-{
-    DoPatch(webUiAssembly, PatchFiddlerWebUi);
-}
-else
-{
-    Console.WriteLine($"No Web UI assembly found under '{installRoot}', skipping the Web UI patch.");
-}
-
-Console.WriteLine("Done");
-
-// The original ends with a key press so that the window stays open. That is only
-// possible when the console owns the input, so it is skipped when it is redirected.
-if (!Console.IsInputRedirected)
-{
-    Console.ReadKey();
-}
+PatchInstallation(root);
+return 0;
 
 // ---------------------------------------------------------------------------------------
 // Local functions
 // ---------------------------------------------------------------------------------------
+
+/// <summary>
+/// Patches the native library and the managed Web UI assembly under
+/// <paramref name="installRoot"/>, skipping the ones that are not present.
+/// </summary>
+void PatchInstallation(string installRoot)
+{
+    string? nativeLibrary = InstallLayout.FindFirstExisting(InstallLayout.NativeLibraryCandidates(installRoot));
+    if (nativeLibrary != null)
+    {
+        DoPatch(nativeLibrary, PatchNativeLibrary);
+    }
+    else
+    {
+        Console.WriteLine($"No native library found under '{installRoot}', skipping the native patch.");
+    }
+
+    string? webUiAssembly = InstallLayout.FindFirstExisting(InstallLayout.WebUiAssemblyCandidates(installRoot));
+    if (webUiAssembly != null)
+    {
+        DoPatch(webUiAssembly, PatchFiddlerWebUi);
+    }
+    else
+    {
+        Console.WriteLine($"No Web UI assembly found under '{installRoot}', skipping the Web UI patch.");
+    }
+
+    Console.WriteLine("Done");
+
+    // The original ends with a key press so that the window stays open. That is only
+    // possible when the console owns the input, so it is skipped when it is redirected.
+    if (!Console.IsInputRedirected)
+    {
+        Console.ReadKey();
+    }
+}
+
+/// <summary>
+/// Puts the native library and the managed assembly back from their backups.
+/// </summary>
+/// <returns><c>0</c> when everything was restored, <c>1</c> when something was missing.</returns>
+int RestoreInstallation(string installRoot)
+{
+    Console.WriteLine($"Restoring the installation under '{installRoot}'...");
+
+    bool complete = true;
+
+    string? nativeLibrary = InstallLayout.FindFirstExisting(InstallLayout.NativeLibraryCandidates(installRoot));
+    if (nativeLibrary is null)
+    {
+        Console.WriteLine("  No native library found, nothing to restore.");
+    }
+    else
+    {
+        string? backup = RestoreFile(nativeLibrary);
+        if (backup is null)
+        {
+            Console.WriteLine($"  No backup found for '{nativeLibrary}', it was left alone.");
+            complete = false;
+        }
+        else
+        {
+            Console.WriteLine($"  Restored '{nativeLibrary}' from '{backup}'.");
+        }
+    }
+
+    string? webUiAssembly = InstallLayout.FindFirstExisting(InstallLayout.WebUiAssemblyCandidates(installRoot));
+    if (webUiAssembly is null)
+    {
+        Console.WriteLine("  No Web UI assembly found, nothing to restore.");
+    }
+    else
+    {
+        string? backup = RestoreFile(webUiAssembly);
+        if (backup is null)
+        {
+            Console.WriteLine($"  No backup found for '{webUiAssembly}', it was left alone.");
+            complete = false;
+        }
+        else
+        {
+            Console.WriteLine($"  Restored '{webUiAssembly}' from '{backup}'.");
+        }
+    }
+
+    return complete ? 0 : 1;
+}
+
+/// <summary>
+/// Restores one file from its backup and reports what happened.
+/// </summary>
+/// <returns>The backup that was used, or <c>null</c> when nothing was restored.</returns>
+string? RestoreFile(string path)
+{
+    try
+    {
+        return Backup.Restore(path);
+    }
+    catch (Exception ex)
+    {
+        Console.WriteLine($"  Could not restore '{path}': {ex.GetType().Name}: {ex.Message}");
+        return null;
+    }
+}
 
 /// <summary>
 /// Backs the file up, then applies <paramref name="patch"/> to it. Failures are reported
@@ -129,125 +233,4 @@ bool PatchNativeLibrary(string path)
     return name.Equals("libfiddler.so", StringComparison.OrdinalIgnoreCase)
         ? PatchLibfiddlerELF(path)
         : UseLegacyPatchLibfiddlerELF(path);
-}
-
-/// <summary>
-/// The candidate locations of the native library. Newer builds ship
-/// <c>libfiddler.dll</c>, older ones <c>fiddler.dll</c>.
-/// </summary>
-IEnumerable<string> GetMethods()
-{
-    if (OperatingSystem.IsWindows())
-    {
-        yield return "libfiddler.dll";
-        yield return "fiddler.dll";
-        yield break;
-    }
-
-    if (OperatingSystem.IsMacOS())
-    {
-        yield return Path.Combine("Contents", "Frameworks", "libfiddler.dylib");
-        yield break;
-    }
-
-    yield return "libfiddler.so";
-}
-
-/// <summary>
-/// The candidate locations of the native library inside an installation directory.
-/// </summary>
-IEnumerable<string> GetNativeLibraryCandidates(string installRoot)
-{
-    foreach (string relative in GetMethods())
-    {
-        yield return Path.Combine(installRoot, relative);
-    }
-}
-
-/// <summary>
-/// The candidate locations of the managed Web UI assembly. The product ships it either
-/// unpacked from the application archive or in the plain directory tree.
-/// </summary>
-IEnumerable<string> GetWebUiAssemblyCandidates(string installRoot)
-{
-    string[] roots = OperatingSystem.IsMacOS()
-        ? new[] { Path.Combine("Contents", "resources") }
-        : new[] { "resources" };
-
-    string[] layouts =
-    {
-        Path.Combine("app", "out", "WebServer", "Fiddler.WebUi.dll"),
-        Path.Combine("app.asar.unpacked", "out", "WebServer", "Fiddler.WebUi.dll"),
-    };
-
-    foreach (string root in roots)
-    {
-        foreach (string layout in layouts)
-        {
-            yield return Path.Combine(installRoot, root, layout);
-        }
-    }
-}
-
-/// <summary>Returns the first candidate that exists, or <c>null</c>.</summary>
-string? FindFirstExisting(IEnumerable<string> candidates)
-{
-    foreach (string candidate in candidates)
-    {
-        if (File.Exists(candidate))
-        {
-            return candidate;
-        }
-    }
-
-    return null;
-}
-
-/// <summary>
-/// The per-user installation roots to look at. The environment variable comes first,
-/// because that is what the original tool uses, and the well known folder is the fallback
-/// for shells that do not export it.
-/// </summary>
-IEnumerable<string> GetPerUserInstallRoots()
-{
-    string expanded = Environment.ExpandEnvironmentVariables("%LOCALAPPDATA%");
-    if (!string.IsNullOrEmpty(expanded) && !expanded.Contains('%', StringComparison.Ordinal))
-    {
-        yield return expanded;
-    }
-
-    string known = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData);
-    if (!string.IsNullOrEmpty(known) && !known.Equals(expanded, StringComparison.OrdinalIgnoreCase))
-    {
-        yield return known;
-    }
-}
-
-/// <summary>
-/// Resolves the default installation directory. On Windows the per-user installation is
-/// preferred and the machine-wide one is the fallback; on macOS the application bundle is
-/// used; on Linux the extracted AppImage directory is used.
-/// </summary>
-string ResolveDefaultInstallRoot()
-{
-    if (OperatingSystem.IsWindows())
-    {
-        foreach (string root in GetPerUserInstallRoots())
-        {
-            string local = Path.Combine(root, "Programs", "Fiddler Everywhere");
-            if (Directory.Exists(local))
-            {
-                return local;
-            }
-        }
-
-        return Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ProgramFiles), "Fiddler Everywhere");
-    }
-
-    if (OperatingSystem.IsMacOS())
-    {
-        return "/Applications/Fiddler Everywhere.app";
-    }
-
-    return "squashfs-root";
 }
